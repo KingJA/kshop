@@ -11,5 +11,12 @@ import com.kshop.pojo.User;
  */
 public interface IUserService {
     ServerResponse<User> login(String username, String password);
+
     ServerResponse<User> register(User user);
+
+    ServerResponse<String> getForgetQuestion(String username);
+
+    ServerResponse<String> checkForgetAnswer(String username, String quesionn, String answer);
+
+    ServerResponse<String> resetPassword(String username, String newPassword, String token);
 }

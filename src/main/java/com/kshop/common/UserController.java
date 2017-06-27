@@ -22,15 +22,6 @@ public class UserController {
     @Autowired
     private IUserService iUserService;
 
-    /**
-     * 登录
-     *
-     * @param username
-     * @param password
-     * @param session
-     * @return
-     */
-
     @RequestMapping(value = "login.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<User> login(String username, String password, HttpSession session) {
@@ -41,12 +32,6 @@ public class UserController {
         return response;
     }
 
-    /**
-     * 退出登录
-     *
-     * @param session
-     * @return
-     */
     @RequestMapping(value = "logout.do", method = RequestMethod.GET)
     @ResponseBody
     public ServerResponse<User> logout(HttpSession session) {
@@ -59,4 +44,38 @@ public class UserController {
     public ServerResponse<User> register(User user) {
         return iUserService.register(user);
     }
+
+    @RequestMapping(value = "get_user_info.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<User> getUserInfo(HttpSession session) {
+        User currentUser = (User) session.getAttribute(Const.CURRENT_USER);
+        if (currentUser == null) {
+            return ServerResponse.createError("当前用户未登录");
+        }
+
+        return ServerResponse.createSuccess(currentUser);
+    }
+
+    @RequestMapping(value = "get_forget_question.do", method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<String> getForgetQuestion(String username) {
+        return iUserService.getForgetQuestion(username);
+    }
+
+    @RequestMapping(value = "check_forget_answer.do", method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<String> checkForgetAnswer(String username, String question, String answer) {
+        return iUserService.checkForgetAnswer(username, question, answer);
+    }
+
+    @RequestMapping(value = "reset_password.do", method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<String> resetPassword(String username, String password, String token) {
+        return iUserService.resetPassword(username, password, token);
+    }
+
+
+
+
+
 }

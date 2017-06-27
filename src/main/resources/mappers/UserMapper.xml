@@ -164,4 +164,21 @@
     </select>
 
 
+    <select id="selectForgetQuestion" resultType="string">
+        SELECT question
+        FROM mmall_user
+        WHERE username=#{username}
+    </select>
+    <select id="checkForgetAnswer" resultType="int">
+        SELECT count(1)
+        FROM mmall_user
+        WHERE username=#{username} AND question=#{question} AND answer=#{answer}
+    </select>
+
+    <update id="updatePassword">
+        UPDATE mmall_user
+        SET password=#{password}
+        WHERE username=#{username}
+    </update>
+
 </mapper>

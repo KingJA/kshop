@@ -39,7 +39,7 @@ public class ServerResponse<T> {
         return new ServerResponse<T>(ResponseCode.SUCCESS.getStatus());
     }
 
-    public static <T> ServerResponse<T> createSuccess(String message) {
+    public static <T> ServerResponse<T> createSuccessMsg(String message) {
         return new ServerResponse<T>(ResponseCode.SUCCESS.getStatus(), message);
     }
 
@@ -74,5 +74,9 @@ public class ServerResponse<T> {
 
     public T getData() {
         return data;
+    }
+
+    public static void main(String[] args) {
+        ServerResponse.createSuccess("ddd");
     }
 }
