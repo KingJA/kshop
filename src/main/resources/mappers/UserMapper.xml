@@ -181,4 +181,14 @@
         WHERE username=#{username}
     </update>
 
+    <select id="checkPassword" resultType="int">
+        SELECT count(1)
+        FROM mmall_user
+        WHERE password=#{password} AND id=#{id}
+    </select>
+    <select id="checkEmailById" resultType="int">
+        SELECT count(1)
+        FROM mmall_user
+        WHERE email=#{email} AND id!=#{id}
+    </select>
 </mapper>

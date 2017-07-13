@@ -68,14 +68,37 @@ public class UserController {
         return iUserService.checkForgetAnswer(username, question, answer);
     }
 
-    @RequestMapping(value = "reset_password.do", method = RequestMethod.POST)
+    @RequestMapping(value = "forget_reset_password.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<String> resetPassword(String username, String password, String token) {
-        return iUserService.resetPassword(username, password, token);
+    public ServerResponse<String> forgetResetPassword(String username, String password, String token) {
+        return iUserService.forgetResetPassword(username, password, token);
     }
 
+    @RequestMapping(value = "reset_password.do", method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<String> resetPassword(HttpSession session, String oldPassword, String newPassword) {
+        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        if (user == null) {
+            return ServerResponse.createError("当前无用户登录");
+        }
+        return iUserService.resetPassword(oldPassword, newPassword, user);
+    }
 
-
+    @RequestMapping(value = "update_user.do", method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<User> updateUser(HttpSession session, User user) {
+        User currentUser = (User) session.getAttribute(Const.CURRENT_USER);
+        if (user == null) {
+            return ServerResponse.createError("当前无用户登录");
+        }
+        user.setId(currentUser.getId());
+        ServerResponse<User> response = iUserService.updateUser(user);
+        if (response.isSuccess()) {
+            response.getData().setUsername(currentUser.getUsername());
+            session.setAttribute(Const.CURRENT_USER, response.getData());
+        }
+        return response;
+    }
 
 
 }

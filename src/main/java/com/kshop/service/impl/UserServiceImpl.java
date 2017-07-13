@@ -81,7 +81,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public ServerResponse<String> resetPassword(String username, String newPassword, String token) {
+    public ServerResponse<String> forgetResetPassword(String username, String newPassword, String token) {
         if (StringUtils.isBlank(token)) {
             return ServerResponse.createError("参数错误，需要传递token");
         }
@@ -104,5 +104,39 @@ public class UserServiceImpl implements IUserService {
             return ServerResponse.createError("token错误，请重新获取");
         }
         return ServerResponse.createError("重置密码错误");
+    }
+
+    @Override
+    public ServerResponse<String> resetPassword(String oldPassword, String newPassword, User user) {
+        //防止横向越权，要检验下这个用户的旧密码
+        int resoutCount = userMapper.checkPassword(MD5Util.MD5EncodeUtf8(oldPassword), user.getId());
+        if (resoutCount == 0) {
+            return ServerResponse.createError("旧密码错误 ");
+        }
+        user.setPassword(MD5Util.MD5EncodeUtf8(newPassword));
+        int updateCount = userMapper.updateByPrimaryKeySelective(user);
+        if (updateCount > 0) {
+            return ServerResponse.createError("密码修改成功 ");
+        }
+        return ServerResponse.createError("密码修改失败 ");
+    }
+
+    @Override
+    public ServerResponse<User> updateUser(User user) {
+        int resultCount=userMapper.checkEmailById(user.getId(),user.getEmail());
+        if (resultCount > 0) {
+            return  ServerResponse.createError("email已经存在，请填写其他email");
+        }
+        User updateUser = new User();
+        updateUser.setId(user.getId());
+        updateUser.setEmail(user.getEmail());
+        updateUser.setQuestion(user.getQuestion());
+        updateUser.setAnswer(user.getAnswer());
+
+        int updateCount =userMapper.updateByPrimaryKeySelective(updateUser);
+        if (updateCount > 0) {
+            return ServerResponse.createSuccess("更新用户信息成功",updateUser);
+        }
+        return ServerResponse.createError("更新用户信息失败");
     }
 }
